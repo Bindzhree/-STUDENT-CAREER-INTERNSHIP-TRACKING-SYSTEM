@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareerTrack — Student Career & Internship Tracking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green:      #1a6b4a;
+      --green-mid:  #155c3e;
+      --green-deep: #0d3d2a;
+      --green-lt:   #e6f4ee;
+      --cream:      #f7f5f0;
+      --border:     #e0ddd6;
+      --text:       #1a1a18;
+      --muted:      #6b6a66;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); overflow-x: hidden; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 3rem; background: rgba(247,245,240,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(224,221,214,0.6); }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--green); }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-links a { font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--green); }
+    .nav-cta { background: var(--green); color: white !important; padding: 0.5rem 1.25rem; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; transition: background 0.2s; }
+    .nav-cta:hover { background: var(--green-mid) !important; }
+
+    /* HERO */
+    .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8rem 2rem 4rem; position: relative; overflow: hidden; text-align: center; }
+    .hero::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 20% 30%, rgba(26,107,74,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(26,107,74,0.06) 0%, transparent 50%); pointer-events: none; }
+    .hero::after { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(26,107,74,0.12) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none; mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 0%, transparent 100%); }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--green-lt); color: var(--green); border: 1px solid rgba(26,107,74,0.2); padding: 6px 16px; border-radius: 99px; font-size: 13px; font-weight: 500; margin-bottom: 2rem; animation: fadeUp 0.6s ease both; }
+    .hero-badge::before { content: '●'; font-size: 8px; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .hero-title { font-family: 'DM Serif Display', serif; font-size: clamp(3rem, 7vw, 6rem); line-height: 1.05; letter-spacing: -0.02em; color: var(--text); max-width: 900px; margin-bottom: 1.5rem; animation: fadeUp 0.6s 0.1s ease both; }
+    .hero-title em { font-style: italic; color: var(--green); position: relative; }
+    .hero-title em::after { content: ''; position: absolute; bottom: 4px; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--green), transparent); border-radius: 2px; }
+    .hero-sub { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--muted); max-width: 560px; line-height: 1.7; margin-bottom: 2.5rem; animation: fadeUp 0.6s 0.2s ease both; }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; animation: fadeUp 0.6s 0.3s ease both; }
+    .btn-primary-lg { background: var(--green); color: white; padding: 0.85rem 2rem; border-radius: 10px; font-size: 15px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 20px rgba(26,107,74,0.25); }
+    .btn-primary-lg:hover { background: var(--green-mid); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,107,74,0.3); }
+    .btn-outline-lg { background: transparent; color: var(--text); padding: 0.85rem 2rem; border-radius: 10px; font-size: 15px; font-weight: 500; text-decoration: none; border: 1.5px solid var(--border); transition: all 0.2s; }
+    .btn-outline-lg:hover { border-color: var(--green); color: var(--green); }
+    .hero-stats { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; margin-top: 4rem; animation: fadeUp 0.6s 0.4s ease both; }
+    .stat-pill { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .stat-pill-num { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--green); }
+    .stat-pill-lbl { font-size: 12px; color: var(--muted); }
+
+    /* FEATURES */
+    .features { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
+    .section-label { text-align: center; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); margin-bottom: 1rem; }
+    .section-title { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 4vw, 3rem); text-align: center; margin-bottom: 1rem; letter-spacing: -0.02em; }
+    .section-sub { text-align: center; color: var(--muted); font-size: 16px; max-width: 500px; margin: 0 auto 4rem; line-height: 1.7; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .feature-card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 2rem; transition: all 0.25s; position: relative; overflow: hidden; }
+    .feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--green), transparent); opacity: 0; transition: opacity 0.25s; }
+    .feature-card:hover { border-color: rgba(26,107,74,0.3); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(26,107,74,0.1); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon { width: 48px; height: 48px; background: var(--green-lt); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 1.25rem; }
+    .feature-title { font-size: 17px; font-weight: 600; margin-bottom: 0.5rem; }
+    .feature-desc { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+    /* HOW IT WORKS */
+    .how { background: var(--green-deep); padding: 6rem 2rem; position: relative; overflow: hidden; }
+    .how::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 28px 28px; }
+    .how .section-label { color: rgba(255,255,255,0.5); }
+    .how .section-title { color: white; }
+    .how .section-sub { color: rgba(255,255,255,0.5); }
+    .steps { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; position: relative; }
+    .steps::before { content: ''; position: absolute; left: 23px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--green), transparent); }
+    .step { display: flex; gap: 1.5rem; align-items: flex-start; padding: 1.5rem 0; }
+    .step-num { width: 48px; height: 48px; flex-shrink: 0; background: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 18px; color: white; position: relative; z-index: 1; }
+    .step-content { padding-top: 8px; }
+    .step-title { font-size: 17px; font-weight: 600; color: white; margin-bottom: 4px; }
+    .step-desc { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+
+    /* TECH */
+    .tech { padding: 6rem 2rem; max-width: 900px; margin: 0 auto; text-align: center; }
+    .tech-pills { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; margin-top: 2.5rem; }
+    .tech-pill { background: white; border: 1px solid var(--border); border-radius: 99px; padding: 0.6rem 1.25rem; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+    .tech-pill:hover { border-color: var(--green); color: var(--green); background: var(--green-lt); }
+    .tech-pill span { font-size: 18px; }
+
+    /* CTA */
+    .cta-section { background: var(--green); padding: 6rem 2rem; text-align: center; position: relative; overflow: hidden; }
+    .cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(255,255,255,0.06) 0%, transparent 70%); }
+    .cta-title { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 4vw, 3.5rem); color: white; margin-bottom: 1rem; letter-spacing: -0.02em; position: relative; }
+    .cta-sub { color: rgba(255,255,255,0.7); font-size: 16px; margin-bottom: 2.5rem; position: relative; }
+    .btn-white { background: white; color: var(--green); padding: 0.9rem 2.5rem; border-radius: 10px; font-size: 15px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+    .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+
+    /* FOOTER */
+    footer { background: var(--green-deep); padding: 2rem 3rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .footer-logo { font-family: 'DM Serif Display', serif; font-size: 18px; color: white; }
+    .footer-text { font-size: 13px; color: rgba(255,255,255,0.4); }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    .fade-in:nth-child(1) { transition-delay: 0s; }
+    .fade-in:nth-child(2) { transition-delay: 0.1s; }
+    .fade-in:nth-child(3) { transition-delay: 0.2s; }
+    .fade-in:nth-child(4) { transition-delay: 0.3s; }
+    .fade-in:nth-child(5) { transition-delay: 0.4s; }
+    .fade-in:nth-child(6) { transition-delay: 0.5s; }
+    .fade-in:nth-child(7) { transition-delay: 0.6s; }
+    .fade-in:nth-child(8) { transition-delay: 0.7s; }
+
+    @media (max-width: 640px) { nav { padding: 1rem 1.5rem; } .nav-links { display: none; } .hero-stats { gap: 1rem; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><span>🎯</span> CareerTrack</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#tech">Tech Stack</a>
+    <a href="/app" class="nav-cta">Sign in →</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">Student Career Platform</div>
+  <h1 class="hero-title">Your entire career journey,<br><em>tracked in one place</em></h1>
+  <p class="hero-sub">Track internship applications, interview rounds, skills, certifications, and resume versions — all from a single dashboard built for students.</p>
+  <div class="hero-actions">
+    <a href="/app" class="btn-primary-lg">Get Started Free →</a>
+    <a href="#features" class="btn-outline-lg">See Features</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-pill"><div><div class="stat-pill-num">10</div><div class="stat-pill-lbl">Database Tables</div></div></div>
+    <div class="stat-pill"><div><div class="stat-pill-num">8</div><div class="stat-pill-lbl">Core Modules</div></div></div>
+    <div class="stat-pill"><div><div class="stat-pill-num">PDF</div><div class="stat-pill-lbl">Resume Parser</div></div></div>
+    <div class="stat-pill"><div><div class="stat-pill-num">JWT</div><div class="stat-pill-lbl">Secure Auth</div></div></div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="section-label">Everything you need</div>
+  <h2 class="section-title">Built for the student journey</h2>
+  <p class="section-sub">From your first application to your first offer letter — CareerTrack has every step covered.</p>
+  <div class="features-grid">
+    <div class="feature-card fade-in"><div class="feature-icon">📋</div><div class="feature-title">Application Tracker</div><div class="feature-desc">Track every internship and job application with status updates — Applied, Assessment, Interview, Selected, or Rejected. Search and filter instantly.</div></div>
+    <div class="feature-card fade-in"><div class="feature-icon">🎙</div><div class="feature-title">Interview Rounds</div><div class="feature-desc">Log every interview round with type, date, outcome, prep status, and notes. Click the outcome badge to cycle through results instantly.</div></div>
+    <div class="feature-card fade-in"><div class="feature-icon">📄</div><div class="feature-title">PDF Resume Parser</div><div class="feature-desc">Upload your resume on first login. The system automatically extracts your skills, certifications, and projects — no manual entry needed.</div></div>
+    <div class="feature-card fade-in"><div class="feature-icon">📊</div><div class="feature-title">Career Dashboard</div><div class="feature-desc">See your success rate, monthly activity, and application breakdown through interactive charts powered by SQL aggregate queries.</div></div>
+    <div class="feature-card fade-in"><div class="feature-icon">💼</div><div class="feature-title">Internship Experience</div><div class="feature-desc">Track actual internships — company, role, dates, stipend, skills used, and completion certificate. Mark Ongoing or Completed.</div></div>
+    <div class="feature-card fade-in"><div class="feature-icon">🗂</div><div class="feature-title">Resume Versions</div><div class="feature-desc">Maintain multiple resume versions and see which one gets more responses. Link each application to the resume you actually submitted.</div></div>
+    <div class="feature-card fade-in"><div class="feature-icon">⚡</div><div class="feature-title">Skills & Certifications</div><div class="feature-desc">Track skills grouped by proficiency and certifications with expiry warnings. Auto-imported from your resume or added manually.</div></div>
+    <div class="feature-card fade-in"><div class="feature-icon">🔐</div><div class="feature-title">Secure & Personal</div><div class="feature-desc">JWT authentication and bcrypt password hashing keep your data private. Everything linked to your account only.</div></div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="section-label">Simple flow</div>
+  <h2 class="section-title" style="color:white;text-align:center;margin-bottom:0.75rem">How it works</h2>
+  <p class="section-sub" style="margin-bottom:3.5rem">From signup to dashboard in minutes.</p>
+  <div class="steps">
+    <div class="step fade-in"><div class="step-num">1</div><div class="step-content"><div class="step-title">Register your account</div><div class="step-desc">Create an account with your name, USN, branch, semester and CGPA.</div></div></div>
+    <div class="step fade-in"><div class="step-num">2</div><div class="step-content"><div class="step-title">Upload your resume</div><div class="step-desc">Upload your resume PDF. The system extracts your skills and certifications automatically. Review and confirm in one click.</div></div></div>
+    <div class="step fade-in"><div class="step-num">3</div><div class="step-content"><div class="step-title">Start tracking applications</div><div class="step-desc">Add internship applications, update their status as things progress, and log every interview round with notes.</div></div></div>
+    <div class="step fade-in"><div class="step-num">4</div><div class="step-content"><div class="step-title">Get selected — track the internship</div><div class="step-desc">When you mark an application as Selected, the system asks if you want to add it to your Experience tracker. One click and it's done.</div></div></div>
+    <div class="step fade-in"><div class="step-num">5</div><div class="step-content"><div class="step-title">Watch your career grow</div><div class="step-desc">The dashboard shows your success rate, monthly activity, and skill growth over time.</div></div></div>
+  </div>
+</section>
+
+<section class="tech" id="tech">
+  <div class="section-label">Under the hood</div>
+  <h2 class="section-title">Built with modern tech</h2>
+  <p class="section-sub">A full-stack web application with a proper relational database and REST API.</p>
+  <div class="tech-pills">
+    <div class="tech-pill"><span>🌐</span> HTML5</div>
+    <div class="tech-pill"><span>🎨</span> CSS3</div>
+    <div class="tech-pill"><span>⚡</span> JavaScript</div>
+    <div class="tech-pill"><span>🟢</span> Node.js</div>
+    <div class="tech-pill"><span>🚂</span> Express.js</div>
+    <div class="tech-pill"><span>🗄</span> MySQL</div>
+    <div class="tech-pill"><span>🔐</span> JWT Auth</div>
+    <div class="tech-pill"><span>🔒</span> bcrypt</div>
+    <div class="tech-pill"><span>📄</span> pdf-parse</div>
+    <div class="tech-pill"><span>📊</span> Chart.js</div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <h2 class="cta-title">Ready to track your career?</h2>
+  <p class="cta-sub">Join and start organizing your internship journey today.</p>
+  <a href="/app" class="btn-white">Get Started Free →</a>
+</section>
+
+<footer>
+  <div class="footer-logo">🎯 CareerTrack</div>
+  <div class="footer-text">Student Career & Internship Tracking System · DBMS Mini Project</div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  if (localStorage.getItem('token')) {
+    document.querySelectorAll('a[href="/app"]').forEach(a => {
+      if (a.textContent.includes('Get Started')) a.textContent = 'Go to Dashboard →';
+      if (a.textContent.includes('Sign in')) a.textContent = 'Dashboard →';
+    });
+  }
+</script>
+</body>
+</html>

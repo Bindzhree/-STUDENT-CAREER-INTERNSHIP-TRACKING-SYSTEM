@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareerTrack</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- ===================== AUTH SECTION ===================== -->
+<div id="auth-section">
+
+  <!-- LOGIN -->
+  <div id="login-box" class="auth-wrap">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <div class="icon">🎯</div>
+        <h1>CareerTrack</h1>
+        <p>Sign in to your account</p>
+      </div>
+      <div class="card">
+        <form onsubmit="Auth.login(event)" autocomplete="off">
+          <div class="form-group"><label>Email</label><input id="login-email" type="email" placeholder="you@college.edu" required /></div>
+          <div class="form-group"><label>Password</label><input id="login-password" type="password" placeholder="••••••••" required /></div>
+          <div class="error-msg" id="login-error"></div>
+          <button id="login-btn" class="btn btn-primary btn-block" type="submit">Sign in</button>
+        </form>
+      </div>
+      <p class="auth-link">No account? <a href="#" onclick="showAuth('register')">Register here</a></p>
+<p class="auth-link"><a href="#" onclick="showAuth('forgot')">Forgot password?</a></p>
+    </div>
+  </div>
+
+  <!-- FORGOT PASSWORD -->
+  <div id="forgot-box" class="auth-wrap hidden">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <div class="icon">🔑</div>
+        <h1>Reset Password</h1>
+        <p>Enter your email and USN to reset</p>
+      </div>
+      <div class="card">
+        <form onsubmit="Auth.forgotPassword(event)">
+          <div class="form-group"><label>Email</label><input id="forgot-email" type="email" placeholder="you@college.edu" required /></div>
+          <div class="form-group"><label>USN</label><input id="forgot-usn" placeholder="1XX21CS000" required /></div>
+          <div class="form-group"><label>New Password</label><input id="forgot-newpwd" type="password" placeholder="Enter new password" required /></div>
+          <div class="form-group"><label>Confirm Password</label><input id="forgot-confirmpwd" type="password" placeholder="Confirm new password" required /></div>
+          <div class="error-msg" id="forgot-error"></div>
+          <div class="success-msg" id="forgot-success"></div>
+          <button id="forgot-btn" class="btn btn-primary btn-block" type="submit">Reset Password</button>
+        </form>
+      </div>
+      <p class="auth-link"><a href="#" onclick="showAuth('login')">Back to login</a></p>
+    </div>
+  </div>
+
+  <!-- REGISTER -->
+  <div id="register-box" class="auth-wrap hidden">
+    <div class="auth-box" style="max-width:480px">
+      <div class="auth-logo">
+        <div class="icon">🎯</div>
+        <h1>Create account</h1>
+      </div>
+      <div class="card">
+        <form onsubmit="Auth.register(event)">
+          <div class="form-row">
+            <div class="form-group"><label>Full Name</label><input id="reg-name" placeholder="Priya Sharma" required /></div>
+            <div class="form-group"><label>USN</label><input id="reg-usn" placeholder="1XX21CS000" required /></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Branch</label><input id="reg-branch" placeholder="CSE" /></div>
+            <div class="form-group"><label>Semester</label><input id="reg-semester" type="number" min="1" max="8" placeholder="6" /></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Email</label><input id="reg-email" type="email" placeholder="you@college.edu" required /></div>
+            <div class="form-group"><label>CGPA</label><input id="reg-cgpa" type="number" step="0.01" min="0" max="10" placeholder="8.5" /></div>
+          </div>
+          <div class="form-group"><label>Password</label><input id="reg-password" type="password" placeholder="Min 8 characters" required /></div>
+          <div class="error-msg" id="reg-error"></div>
+          <button id="reg-btn" class="btn btn-primary btn-block" type="submit">Create account</button>
+        </form>
+      </div>
+      <p class="auth-link">Already have an account? <a href="#" onclick="showAuth('login')">Sign in</a></p>
+    </div>
+  </div>
+
+  <!-- ONBOARDING -->
+  <div id="onboarding-box" class="auth-wrap hidden">
+    <div style="width:100%;max-width:540px">
+
+      <!-- Step 1: Upload -->
+      <div id="onboard-step1" class="card">
+        <h2 style="font-size:18px;font-weight:600;margin-bottom:6px">Welcome! Set up your profile</h2>
+        <p style="color:var(--muted);font-size:14px;margin-bottom:1.5rem">Upload your resume PDF and we'll auto-fill your skills, certifications, and projects.</p>
+        <div style="border:2px dashed var(--border);border-radius:10px;padding:2rem;text-align:center;margin-bottom:1rem;cursor:pointer" onclick="document.getElementById('resume-file').click()">
+          <div style="font-size:28px;margin-bottom:8px">📄</div>
+          <div id="file-label" style="font-size:14px;font-weight:500">Click to upload resume PDF</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">Max 5MB</div>
+        </div>
+        <input id="resume-file" type="file" accept=".pdf" style="display:none" onchange="document.getElementById('file-label').textContent=this.files[0]?.name||'Click to upload resume PDF'" />
+        <div style="display:flex;gap:0.75rem">
+          <button id="parse-btn" class="btn btn-primary" onclick="Auth.parseResume()">Parse Resume</button>
+          <button class="btn btn-outline" onclick="Auth.finishOnboarding()">Skip, add manually</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Review -->
+      <div id="onboard-step2" class="card hidden">
+        <h2 style="font-size:18px;font-weight:600;margin-bottom:4px">Review extracted data</h2>
+        <p style="color:var(--muted);font-size:14px;margin-bottom:1.25rem">Remove anything incorrect, then confirm.</p>
+
+        <div style="margin-bottom:1.25rem">
+          <div style="font-size:13px;font-weight:500;margin-bottom:8px">Skills</div>
+          <div id="parsed-skills" class="chips-wrap"></div>
+        </div>
+        <div style="margin-bottom:1.25rem">
+          <div style="font-size:13px;font-weight:500;margin-bottom:8px">Certifications</div>
+          <div id="parsed-certs"></div>
+        </div>
+        <div style="margin-bottom:1.5rem">
+          <div style="font-size:13px;font-weight:500;margin-bottom:8px">Projects</div>
+          <div id="parsed-projects"></div>
+        </div>
+
+        <div style="display:flex;gap:0.75rem">
+          <button id="confirm-btn" class="btn btn-primary" onclick="Auth.confirmImport()">Confirm & Save</button>
+          <button class="btn btn-outline" onclick="Auth.finishOnboarding()">Skip</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Done -->
+      <div id="onboard-step3" class="card hidden" style="text-align:center;padding:2.5rem">
+        <div style="font-size:40px;margin-bottom:12px">✅</div>
+        <h2 style="font-size:18px;font-weight:600;margin-bottom:8px">Profile set up!</h2>
+        <p style="color:var(--muted);font-size:14px;margin-bottom:1.5rem">Your data has been imported. Start tracking your applications now.</p>
+        <button class="btn btn-primary" onclick="Auth.finishOnboarding()">Go to Dashboard</button>
+      </div>
+
+    </div>
+  </div>
+</div><!-- /auth-section -->
+
+
+<!-- ===================== MAIN APP ===================== -->
+<div id="app" class="layout hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">🎯 CareerTrack</div>
+    <a href="#" data-page="dashboard"      onclick="Router.go('dashboard');return false">▦ Dashboard</a>
+    <a href="#" data-page="applications"   onclick="Router.go('applications');return false">📋 Applications</a>
+    <a href="#" data-page="interviews"     onclick="Router.go('interviews');return false">🎙 Interviews</a>
+    <a href="#" data-page="skills"         onclick="Router.go('skills');return false">⚡ Skills</a>
+    <a href="#" data-page="certifications" onclick="Router.go('certifications');return false">🏆 Certifications</a>
+    <a href="#" data-page="experience" onclick="Router.go('experience');return false">💼 Experience</a>
+    <a href="#" data-page="resumes" onclick="Router.go('resumes');return false">📄 Resumes</a>
+    <div class="sidebar-footer">
+  <div style="display:flex;align-items:center;gap:10px;padding:0 0.75rem;margin-bottom:8px">
+    <div id="sidebar-avatar" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:white;flex-shrink:0;background:var(--accent)"></div>
+    <div>
+      <div class="sidebar-user" id="sidebar-name"></div>
+      <div class="sidebar-branch" id="sidebar-branch"></div>
+    </div>
+  </div>
+  <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center;margin-bottom:6px" onclick="Auth.openAvatarModal()">Edit Profile Picture</button>
+  <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center;margin-bottom:6px" onclick="openModal('change-pwd-modal')">Change Password</button>
+  <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center" onclick="Auth.logout()">Logout</button>
+</div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+
+    <!-- ---- DASHBOARD ---- -->
+    <div id="page-dashboard" class="page">
+      <h1 class="page-title">Dashboard</h1>
+      <div class="grid-4">
+        <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-lbl">Total Applications</div></div>
+        <div class="stat-card"><div class="stat-num success-accent" id="stat-selected">—</div><div class="stat-lbl">Selected</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-rate">—</div><div class="stat-lbl">Success Rate</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-certs">—</div><div class="stat-lbl">Certifications</div></div>
+      </div>
+      <div class="grid-2 mb-15">
+        <div class="card"><div class="card-title">Monthly Activity</div><canvas id="bar-chart"></canvas></div>
+        <div class="card"><div class="card-title">By Status</div><canvas id="doughnut-chart"></canvas></div>
+      </div>
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Recent Applications</div><div id="recent-apps"></div></div>
+        <div class="card"><div class="card-title">Your Skills</div><div id="dash-skills"></div></div>
+      </div>
+    </div>
+
+    <!-- ---- APPLICATIONS ---- -->
+    <div id="page-applications" class="page">
+      <div class="page-header">
+        <h1 class="page-title">Applications</h1>
+        <button class="btn btn-primary" onclick="openModal('app-modal')">+ Add Application</button>
+      </div>
+      <div class="card">
+        <div style="display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap">
+  <input id="apps-search" placeholder="Search by company or role..." style="flex:1;min-width:200px" oninput="Pages.applications.filter()" />
+  <select id="apps-status-filter" style="width:160px" onchange="Pages.applications.filter()">
+    <option value="">All Statuses</option>
+    <option>Applied</option>
+    <option>Assessment</option>
+    <option>Interview</option>
+    <option>Selected</option>
+    <option>Rejected</option>
+  </select>
+</div>
+        <div id="apps-empty" class="empty-state hidden">No applications yet. Add your first one!</div>
+        <div id="apps-table-wrap" class="table-wrap hidden">
+          <table>
+            <thead><tr><th>Company</th><th>Role</th><th>Platform</th><th>Applied</th><th>Deadline</th><th>Status</th><th></th></tr></thead>
+            <tbody id="apps-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- INTERVIEWS ---- -->
+    <div id="page-interviews" class="page">
+      <div class="page-header">
+        <h1 class="page-title">Interview Tracker</h1>
+        <button class="btn btn-primary" onclick="openModal('int-modal')">+ Add Round</button>
+      </div>
+      <div class="card">
+        <div id="int-empty" class="empty-state hidden">No interview rounds yet.</div>
+        <div id="int-table-wrap" class="table-wrap hidden">
+          <table>
+            <thead><tr><th>Company</th><th>Role</th><th>Round</th><th>Type</th><th>Date</th><th>Outcome</th><th>Prep</th><th>Notes</th><th></th></tr></thead>
+            <tbody id="int-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- SKILLS ---- -->
+    <div id="page-skills" class="page">
+      <h1 class="page-title">Skills</h1>
+      <div class="card mb-15">
+        <form class="inline-form" onsubmit="Pages.skills.add(event)">
+          <div class="form-group" style="flex:1;min-width:180px"><label>Skill Name</label><input id="skill-name" placeholder="e.g. React, SQL, Docker..." required /></div>
+          <div class="form-group" style="width:160px">
+            <label>Proficiency</label>
+            <select id="skill-prof"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
+          </div>
+          <button id="skill-add-btn" class="btn btn-primary" type="submit" style="margin-top:1.3rem">+ Add</button>
+        </form>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="badge badge-advanced">Advanced</span></div>
+          <div id="skills-advanced" class="chips-wrap"></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="badge badge-intermediate">Intermediate</span></div>
+          <div id="skills-intermediate" class="chips-wrap"></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="badge badge-beginner">Beginner</span></div>
+          <div id="skills-beginner" class="chips-wrap"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- CERTIFICATIONS ---- -->
+    <div id="page-certifications" class="page">
+      <div class="page-header">
+        <h1 class="page-title">Certifications</h1>
+        <button class="btn btn-primary" onclick="openModal('cert-modal')">+ Add Certification</button>
+      </div>
+      <div class="grid-2" id="certs-grid"></div>
+    </div>
+
+    <!-- ---- RESUMES ---- -->
+    <div id="page-resumes" class="page">
+      <div class="page-header">
+        <h1 class="page-title">Resume Versions</h1>
+        <button class="btn btn-primary" onclick="openModal('res-modal')">+ Add Resume</button>
+      </div>
+      <div class="grid-2" id="resumes-grid"></div>
+    </div>
+
+    <!-- ---- EXPERIENCE ---- -->
+<div id="page-experience" class="page">
+  <div class="page-header">
+    <h1 class="page-title">Internship Experience</h1>
+    <button class="btn btn-primary" onclick="openModal('exp-modal')">+ Add Experience</button>
+  </div>
+  <div class="grid-2" id="exp-grid"></div>
+</div>
+
+  </div><!-- /main-content -->
+</div><!-- /app -->
+
+
+
+<!-- ===================== MODALS ===================== -->
+<!-- Avatar Modal -->
+<div id="avatar-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Profile Picture</div>
+    <div style="text-align:center;margin-bottom:1.25rem">
+      <div id="avatar-preview" style="width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:600;color:white;background:var(--accent);margin:0 auto 12px"></div>
+      <div style="font-size:13px;color:var(--muted)">Paste an image URL or keep the default initials avatar</div>
+    </div>
+    <div class="form-group">
+      <label>Image URL</label>
+      <input id="avatar-url-input" placeholder="https://... (leave empty for initials)" oninput="Auth.previewAvatar()" />
+    </div>
+    <div class="error-msg" id="avatar-error"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" onclick="closeModal('avatar-modal')">Cancel</button>
+      <button type="button" class="btn btn-danger btn-sm" onclick="Auth.removeAvatar()">Remove</button>
+      <button type="button" id="avatar-save-btn" class="btn btn-primary" onclick="Auth.saveAvatar()">Save</button>
+    </div>
+  </div>
+</div>
+
+ <!-- Change Password -->
+<div id="change-pwd-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Change Password</div>
+    <form onsubmit="Auth.changePassword(event)">
+      <div class="form-group"><label>Current Password</label><input id="pwd-current" type="password" placeholder="Enter current password" required /></div>
+      <div class="form-group"><label>New Password</label><input id="pwd-new" type="password" placeholder="Enter new password" required /></div>
+      <div class="form-group"><label>Confirm New Password</label><input id="pwd-confirm" type="password" placeholder="Confirm new password" required /></div>
+      <div class="error-msg" id="pwd-error"></div>
+      <div class="success-msg" id="pwd-success"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('change-pwd-modal')">Cancel</button>
+        <button type="submit" id="pwd-btn" class="btn btn-primary">Change Password</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Resume -->
+<div id="res-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Add Resume Version</div>
+    <form onsubmit="Pages.resumes.add(event)">
+      <div class="form-group"><label>Version Name *</label><input id="res-version" placeholder="Resume v1 - Jan 2025" required /></div>
+      <div class="form-group"><label>File URL</label><input id="res-url" placeholder="Google Drive / Dropbox link..." /></div>
+      <div class="form-group"><label>Upload Date</label><input id="res-date" type="date" /></div>
+      <div class="form-group"><label>Notes</label><textarea id="res-notes" placeholder="What changed in this version..."></textarea></div>
+      <div class="error-msg" id="res-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('res-modal')">Cancel</button>
+        <button type="submit" id="res-add-btn" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Resume -->
+<div id="edit-res-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Edit Resume Version</div>
+    <form onsubmit="Pages.resumes.saveEdit(event)">
+      <input type="hidden" id="edit-res-id" />
+      <div class="form-group"><label>Version Name *</label><input id="edit-res-version" required /></div>
+      <div class="form-group"><label>File URL</label><input id="edit-res-url" placeholder="Google Drive / Dropbox link..." /></div>
+      <div class="form-group"><label>Upload Date</label><input id="edit-res-date" type="date" /></div>
+      <div class="form-group"><label>Notes</label><textarea id="edit-res-notes"></textarea></div>
+      <div class="error-msg" id="edit-res-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('edit-res-modal')">Cancel</button>
+        <button type="submit" id="edit-res-btn" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Experience -->
+<div id="exp-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Add Internship Experience</div>
+    <form onsubmit="Pages.experience.add(event)">
+      <div class="form-row">
+        <div class="form-group">
+  <label>Company Name *</label>
+  <select id="exp-company-select" onchange="Pages.experience.handleCompanySelect()" style="margin-bottom:6px">
+    <option value="">Select existing company...</option>
+  </select>
+  <input id="exp-company" placeholder="Or type new company name" required />
+</div>
+        <div class="form-group"><label>Role *</label><input id="exp-role" placeholder="SDE Intern" required /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Start Date</label><input id="exp-start" type="date" /></div>
+        <div class="form-group"><label>End Date</label><input id="exp-end" type="date" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Type</label>
+          <select id="exp-type"><option>Remote</option><option>On-site</option><option>Hybrid</option></select>
+        </div>
+        <div class="form-group"><label>Stipend</label><input id="exp-stipend" placeholder="₹25,000/month" /></div>
+      </div>
+      <div class="form-group"><label>Description</label><textarea id="exp-desc" placeholder="What did you work on..."></textarea></div>
+      <div class="form-group"><label>Skills Used</label><input id="exp-skills" placeholder="React, Node.js, MySQL" /></div>
+      <div class="form-group"><label>Certificate URL</label><input id="exp-cert" placeholder="https://..." /></div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="exp-status"><option>Ongoing</option><option>Completed</option></select>
+      </div>
+      <div class="error-msg" id="exp-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('exp-modal')">Cancel</button>
+        <button type="submit" id="exp-add-btn" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Experience -->
+<div id="edit-exp-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Edit Experience</div>
+    <form onsubmit="Pages.experience.saveEdit(event)">
+      <input type="hidden" id="edit-exp-id" />
+      <div class="form-row">
+        <div class="form-group"><label>Company Name *</label><input id="edit-exp-company" required /></div>
+        <div class="form-group"><label>Role *</label><input id="edit-exp-role" required /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Start Date</label><input id="edit-exp-start" type="date" /></div>
+        <div class="form-group"><label>End Date</label><input id="edit-exp-end" type="date" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Type</label>
+          <select id="edit-exp-type"><option>Remote</option><option>On-site</option><option>Hybrid</option></select>
+        </div>
+        <div class="form-group"><label>Stipend</label><input id="edit-exp-stipend" placeholder="₹25,000/month" /></div>
+      </div>
+      <div class="form-group"><label>Description</label><textarea id="edit-exp-desc"></textarea></div>
+      <div class="form-group"><label>Skills Used</label><input id="edit-exp-skills" /></div>
+      <div class="form-group"><label>Certificate URL</label><input id="edit-exp-cert" /></div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="edit-exp-status"><option>Ongoing</option><option>Completed</option></select>
+      </div>
+      <div class="error-msg" id="edit-exp-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('edit-exp-modal')">Cancel</button>
+        <button type="submit" id="edit-exp-btn" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Application -->
+<div id="edit-app-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Edit Application</div>
+    <form onsubmit="Pages.applications.saveEdit(event)">
+      <input type="hidden" id="edit-app-id" />
+      <div class="form-group"><label>Company</label><input id="edit-app-company" disabled style="background:var(--bg);color:var(--muted)" /></div>
+      <div class="form-group"><label>Role *</label><input id="edit-app-role" placeholder="SDE Intern" required /></div>
+      <div class="form-row">
+        <div class="form-group"><label>Platform</label><input id="edit-app-platform" placeholder="LinkedIn / Internshala" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Applied Date</label><input id="edit-app-date" type="date" /></div>
+        <div class="form-group"><label>Deadline</label><input id="edit-app-deadline" type="date" /></div>
+      </div>
+      <div class="error-msg" id="edit-app-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('edit-app-modal')">Cancel</button>
+        <button type="submit" id="edit-app-btn" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Application -->
+<div id="app-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Add Application</div>
+    <form onsubmit="Pages.applications.add(event)">
+      <div class="form-row">
+        <div class="form-group"><label>Company Name *</label><input id="app-company" placeholder="Google" required /></div>
+        <div class="form-group"><label>Role *</label><input id="app-role" placeholder="SDE Intern" required /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Platform</label><input id="app-platform" placeholder="LinkedIn / Internshala" /></div>
+        <div class="form-group"><label>Industry</label><input id="app-industry" placeholder="Tech" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Applied Date</label><input id="app-date" type="date" /></div>
+        <div class="form-group"><label>Deadline</label><input id="app-deadline" type="date" /></div>
+      </div>
+      <div class="form-group">
+        <label>Resume Used</label>
+        <select id="app-resume-id">
+          <option value="">Select resume version (optional)</option>
+        </select>
+      </div>
+      <div class="error-msg" id="app-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('app-modal')">Cancel</button>
+        <button type="submit" id="app-add-btn" class="btn btn-primary">Add</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Interview Round -->
+<div id="edit-int-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Edit Interview Round</div>
+    <form onsubmit="Pages.interviews.saveEdit(event)">
+      <input type="hidden" id="edit-int-id" />
+      <div class="form-row">
+        <div class="form-group"><label>Round #</label><input id="edit-int-round-num" type="number" min="1" /></div>
+        <div class="form-group">
+          <label>Round Type</label>
+          <select id="edit-int-round-type">
+            <option>Technical</option><option>Online Test</option><option>HR</option><option>Group Discussion</option><option>Final</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Date</label><input id="edit-int-date" type="date" /></div>
+        <div class="form-group">
+          <label>Outcome</label>
+          <select id="edit-int-outcome"><option>Pending</option><option>Passed</option><option>Failed</option></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Prep Status</label>
+        <select id="edit-int-prep"><option>Not Started</option><option>In Progress</option><option>Ready</option></select>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="edit-int-notes" placeholder="Topics, feedback..."></textarea></div>
+      <div class="error-msg" id="edit-int-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('edit-int-modal')">Cancel</button>
+        <button type="submit" id="edit-int-btn" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Interview Round -->
+<div id="int-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Add Interview Round</div>
+    <form onsubmit="Pages.interviews.add(event)">
+      <div class="form-group">
+        <label>Application *</label>
+        <select id="int-app-select" required><option value="">Select company — role</option></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Round #</label><input id="int-round-num" type="number" min="1" value="1" /></div>
+        <div class="form-group">
+          <label>Round Type</label>
+          <select id="int-round-type">
+            <option>Technical</option><option>Online Test</option><option>HR</option><option>Group Discussion</option><option>Final</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Date</label><input id="int-date" type="date" /></div>
+        <div class="form-group">
+          <label>Outcome</label>
+          <select id="int-outcome"><option>Pending</option><option>Passed</option><option>Failed</option></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Prep Status</label>
+        <select id="int-prep"><option>Not Started</option><option>In Progress</option><option>Ready</option></select>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="int-notes" placeholder="Topics, feedback, things to remember..."></textarea></div>
+      <div class="error-msg" id="int-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('int-modal')">Cancel</button>
+        <button type="submit" id="int-add-btn" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Certification -->
+<div id="cert-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Add Certification</div>
+    <form onsubmit="Pages.certifications.add(event)">
+      <div class="form-group"><label>Certificate Name *</label><input id="cert-name" placeholder="AWS Cloud Practitioner" required /></div>
+      <div class="form-group"><label>Platform</label><input id="cert-platform" placeholder="Coursera / NPTEL / AWS..." /></div>
+      <div class="form-row">
+        <div class="form-group"><label>Completion Date</label><input id="cert-completion" type="date" /></div>
+        <div class="form-group"><label>Expiry Date</label><input id="cert-expiry" type="date" /></div>
+      </div>
+      <div class="form-group"><label>Proof URL</label><input id="cert-proof" placeholder="https://..." /></div>
+      <div class="error-msg" id="cert-error"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('cert-modal')">Cancel</button>
+        <button type="submit" id="cert-add-btn" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ===================== SCRIPTS ===================== -->
+<script src="/js/api.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/dashboard.js"></script>
+<script src="/js/applications.js"></script>
+<script src="/js/interviews.js"></script>
+<script src="/js/skills.js"></script>
+<script src="/js/certifications.js"></script>
+<script src="/js/experience.js"></script>
+<script src="/js/resumes.js"></script>
+
+<script>
+  // Boot
+  const token = localStorage.getItem('token');
+  if (token) {
+    API.get('/profile')
+      .then(student => {
+        localStorage.setItem('student', JSON.stringify(student));
+        showApp(student);
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
+        showAuth('login');
+      });
+  } else {
+    showAuth('login');
+  }
+</script>
+
+</body>
+</html>
