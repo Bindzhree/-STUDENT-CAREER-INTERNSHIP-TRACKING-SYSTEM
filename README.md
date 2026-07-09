@@ -124,3 +124,7 @@ Frontend is served from the same port — open **http://localhost:5000** in brow
 3. Extracted skills/certs shown for review → student confirms → saved via bulk insert
 4. From dashboard, student tracks applications, interview rounds, skills, certifications
 5. Dashboard shows Chart.js bar + doughnut charts powered by SQL aggregates
+
+# -STUDENT-CAREER-INTERNSHIP-TRACKING-SYSTEM
+CareerTrack helps students manage their entire career journey in one place — track applications, log interview rounds, store certifications, and measure progress through an analytics dashboard.
+
